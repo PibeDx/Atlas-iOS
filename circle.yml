@@ -5,6 +5,7 @@ dependencies:
   pre:
     - gem install bundler
   override:
+    - bundle install
     - bundle exec pod install --repo-update
 test:
   override: 
