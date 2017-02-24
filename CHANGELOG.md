@@ -6,6 +6,10 @@
 
 * Fixed an issue where pulling to load more messages in a conversations wouldn't work when it should
 
+### Enhancements
+
+* Added support for conversations with read receipts disabled. [APPS-2688]
+
 ## 1.0.31
 
 ### Enhancements
