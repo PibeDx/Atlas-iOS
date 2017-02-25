@@ -6,7 +6,7 @@ dependencies:
     - gem install bundler
   override:
     - bundle install
-    - bundle exec pod install --repo-update
+    - bundle exec pod install --repo-update --verbose
 test:
   override: 
     - bundle exec fastlane test
