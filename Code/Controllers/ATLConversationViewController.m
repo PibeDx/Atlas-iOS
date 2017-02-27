@@ -144,7 +144,7 @@ static NSInteger const ATLPhotoActionSheet = 1000;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
+
     [self configureControllerForConversation];
     self.messageInputToolbar.inputToolBarDelegate = self;
     self.addressBarController.delegate = self;
@@ -155,12 +155,12 @@ static NSInteger const ATLPhotoActionSheet = 1000;
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    
+
     if (self.addressBarController && self.conversation.lastMessage && self.canDisableAddressBar) {
         [self.addressBarController disable];
         [self configureAddressBarForConversation];
     }
-    
+
     self.canDisableAddressBar = YES;
     if (!self.hasAppeared) {
         [self.collectionView layoutIfNeeded];
@@ -168,7 +168,7 @@ static NSInteger const ATLPhotoActionSheet = 1000;
     if (!self.hasAppeared && [[[self class] sharedMediaAttachmentCache] objectForKey:self.conversation.identifier]) {
         [self loadCachedMediaAttachments];
     }
-    
+
     // Track changes in authentication state to manipulate the query controller appropriately
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(layerClientDidAuthenticate:) name:LYRClientDidAuthenticateNotification object:self.layerClient];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(layerClientDidDeauthenticate:) name:LYRClientDidDeauthenticateNotification object:self.layerClient];
@@ -178,11 +178,11 @@ static NSInteger const ATLPhotoActionSheet = 1000;
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    
+
     self.hasAppeared = YES;
     [self configurePaginationWindow];
     [self configureMoreMessagesIndicatorVisibility];
-    
+
     if (self.addressBarController && !self.addressBarController.isDisabled) {
         [self.addressBarController.addressBarView.addressBarTextView becomeFirstResponder];
     }
@@ -219,19 +219,19 @@ static NSInteger const ATLPhotoActionSheet = 1000;
 {
     if (!conversation && !_conversation) return;
     if ([conversation isEqual:_conversation]) return;
-    
+
     _conversation = conversation;
-    
+
     self.showingMoreMessagesIndicator = NO;
     [self.typingParticipantIDs removeAllObjects];
     [self updateTypingIndicatorOverlay:NO];
-    
+
     // Set up the controller for the conversation
     [self deinitializeConversationDataSource];
     [self setupConversationDataSource];
     [self configureControllerForConversation];
     [self configureAddressBarForChangedParticipants];
-    
+
     CGSize contentSize = self.collectionView.collectionViewLayout.collectionViewContentSize;
     [self.collectionView setContentOffset:[self bottomOffsetForContentSize:contentSize] animated:NO];
 }
@@ -240,18 +240,18 @@ static NSInteger const ATLPhotoActionSheet = 1000;
 {
     NSAssert(self.conversationDataSource == nil, @"Cannot initialize more than once");
     if (!self.conversation) return;
-    
+
     LYRQuery *query = [LYRQuery queryWithQueryableClass:[LYRMessage class]];
     query.predicate = [LYRPredicate predicateWithProperty:@"conversation" predicateOperator:LYRPredicateOperatorIsEqualTo value:self.conversation];
     query.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"position" ascending:YES]];
-    
+
     if ([self.dataSource respondsToSelector:@selector(conversationViewController:willLoadWithQuery:)]) {
         query = [self.dataSource conversationViewController:self willLoadWithQuery:query];
         if (![query isKindOfClass:[LYRQuery class]]){
             @throw [NSException exceptionWithName:NSInvalidArgumentException reason:@"Data source must return an `LYRQuery` object." userInfo:nil];
         }
     }
-    
+
     self.conversationDataSource = [ATLConversationDataSource dataSourceWithLayerClient:self.layerClient query:query];
     if (!self.conversationDataSource) {
         return;
@@ -296,12 +296,12 @@ static NSInteger const ATLPhotoActionSheet = 1000;
     NSMutableSet *otherParticipantIDs = [[self.conversation.participants valueForKey:@"userID"] mutableCopy];
     if (self.layerClient.authenticatedUser) [otherParticipantIDs removeObject:self.layerClient.authenticatedUser.userID];
     self.shouldDisplayAvatarItem = (otherParticipantIDs.count > 1) ? YES : self.shouldDisplayAvatarItemForOneOtherParticipant;
-    
+
     // Configure message bar button enablement
     BOOL shouldEnableButton = self.conversation ? YES : NO;
     self.messageInputToolbar.rightAccessoryButton.enabled = shouldEnableButton;
     self.messageInputToolbar.leftAccessoryButton.enabled = shouldEnableButton;
-    
+
     // Mark all messages as read if needed
     if (self.conversation.lastMessage && self.marksMessagesAsRead) {
         [self.conversation markAllMessagesAsRead:nil];
@@ -312,7 +312,7 @@ static NSInteger const ATLPhotoActionSheet = 1000;
 {
     if (!self.dataSource) return;
     if (!self.addressBarController) return;
-    
+
     NSMutableOrderedSet *participantIdentifiers = [NSMutableOrderedSet orderedSetWithSet:[self.conversation.participants valueForKey:@"userID"]];
     if ([participantIdentifiers containsObject:self.layerClient.authenticatedUser.userID]) {
         [participantIdentifiers removeObject:self.layerClient.authenticatedUser.userID];
@@ -347,7 +347,7 @@ static NSInteger const ATLPhotoActionSheet = 1000;
 {
     LYRMessage *message = [self.conversationDataSource messageAtCollectionViewIndexPath:indexPath];
     NSString *reuseIdentifier = [self reuseIdentifierForMessage:message atIndexPath:indexPath];
-    
+
     UICollectionViewCell<ATLMessagePresenting> *cell =  [self.collectionView dequeueReusableCellWithReuseIdentifier:reuseIdentifier forIndexPath:indexPath];
     [self configureCell:cell forMessage:message indexPath:indexPath];
     if ([self.delegate respondsToSelector:@selector(conversationViewController:configureCell:forMessage:)]) {
@@ -455,7 +455,7 @@ static NSInteger const ATLPhotoActionSheet = 1000;
     [cell presentMessage:message];
     BOOL willDisplayAvatarItem = (![message.sender.userID isEqualToString:self.layerClient.authenticatedUser.userID]) ? self.shouldDisplayAvatarItem : (self.shouldDisplayAvatarItem && self.shouldDisplayAvatarItemForAuthenticatedUser);
     [cell shouldDisplayAvatarItem:willDisplayAvatarItem];
-    
+
     if ([self shouldDisplayAvatarItemAtIndexPath:indexPath]) {
         [cell updateWithSender:[self participantForIdentity:message.sender]];
     } else {
@@ -505,11 +505,11 @@ static NSInteger const ATLPhotoActionSheet = 1000;
 {
     if (section < ATLNumberOfSectionsBeforeFirstMessageSection) return NO;
     if (section == ATLNumberOfSectionsBeforeFirstMessageSection) return YES;
-    
+
     LYRMessage *message = [self.conversationDataSource messageAtCollectionViewSection:section];
     LYRMessage *previousMessage = [self.conversationDataSource messageAtCollectionViewSection:section - 1];
     if (!previousMessage.sentAt) return NO;
-    
+
     NSDate *date = message.sentAt ?: [NSDate date];
     NSTimeInterval interval = [date timeIntervalSinceDate:previousMessage.sentAt];
     if (fabs(interval) > self.dateDisplayTimeInterval) {
@@ -521,7 +521,7 @@ static NSInteger const ATLPhotoActionSheet = 1000;
 - (BOOL)shouldDisplaySenderLabelForSection:(NSUInteger)section
 {
     if (self.conversation.participants.count <= 2) return NO;
-    
+
     LYRMessage *message = [self.conversationDataSource messageAtCollectionViewSection:section];
     if ([message.sender.userID isEqualToString:self.layerClient.authenticatedUser.userID]) return NO;
     if (section > ATLNumberOfSectionsBeforeFirstMessageSection) {
@@ -541,7 +541,7 @@ static NSInteger const ATLPhotoActionSheet = 1000;
     if (section != lastSection) return NO;
     LYRMessage *message = [self.conversationDataSource messageAtCollectionViewSection:section];
     if (![message.sender.userID isEqualToString:self.layerClient.authenticatedUser.userID]) return NO;
-    
+
     return YES;
 }
 
@@ -567,7 +567,7 @@ static NSInteger const ATLPhotoActionSheet = 1000;
     if (message.sender.userID == nil) {
         return NO;
     }
-    
+
     if ([message.sender.userID isEqualToString:self.layerClient.authenticatedUser.userID] && !self.shouldDisplayAvatarItemForAuthenticatedUser) {
         return NO;
     }
@@ -593,7 +593,7 @@ static NSInteger const ATLPhotoActionSheet = 1000;
     if (messageInputToolbar.textInputView.isFirstResponder) {
         [messageInputToolbar.textInputView resignFirstResponder];
     }
-    
+
     UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
                                                              delegate:self
                                                     cancelButtonTitle:ATLLocalizedString(@"atl.conversation.toolbar.actionsheet.cancel.key", @"Cancel", nil)
@@ -608,7 +608,7 @@ static NSInteger const ATLPhotoActionSheet = 1000;
     if (!self.conversation) {
         return;
     }
-    
+
     // If there's no content in the input field, send the location.
     NSOrderedSet *messages = [self messagesForMediaAttachments:messageInputToolbar.mediaAttachments];
     if (messages.count == 0 && messageInputToolbar.textInputView.text.length == 0) {
@@ -665,7 +665,7 @@ static NSInteger const ATLPhotoActionSheet = 1000;
     } else {
         completePushText = [NSString stringWithFormat:@"%@: %@", senderName, pushText];
     }
-    
+
     LYRMessage *message = ATLMessageForParts(self.layerClient, parts, completePushText, ATLPushNotificationSoundName);
     return message;
 }
@@ -724,15 +724,15 @@ static NSInteger const ATLPhotoActionSheet = 1000;
             case 0:
                 [self displayImagePickerWithSourceType:UIImagePickerControllerSourceTypeCamera];
                 break;
-                
+
             case 1:
                 [self captureLastPhotoTaken];
                 break;
-                
+
             case 2:
                 [self displayImagePickerWithSourceType:UIImagePickerControllerSourceTypePhotoLibrary];
                 break;
-                
+
             default:
                 break;
         }
@@ -786,13 +786,13 @@ static NSInteger const ATLPhotoActionSheet = 1000;
     } else {
         return;
     }
-    
+
     if (mediaAttachment) {
         [self.messageInputToolbar insertMediaAttachment:mediaAttachment withEndLineBreak:YES];
     }
     [self.navigationController dismissViewControllerAnimated:YES completion:nil];
     [self.view becomeFirstResponder];
-    
+
     // Workaround for collection view not displayed on iOS 7.1.
     [self.collectionView setNeedsLayout];
 }
@@ -801,7 +801,7 @@ static NSInteger const ATLPhotoActionSheet = 1000;
 {
     [self.navigationController dismissViewControllerAnimated:YES completion:nil];
     [self.view becomeFirstResponder];
-    
+
     // Workaround for collection view not displayed on iOS 7.1.
     [self.collectionView setNeedsLayout];
 }
@@ -829,7 +829,7 @@ static NSInteger const ATLPhotoActionSheet = 1000;
     if (!self.layerClient) return;
     if (!notification.object) return;
     if (![notification.object isEqual:self.layerClient]) return;
-    
+
     NSArray *changes = notification.userInfo[LYRClientObjectChangesUserInfoKey];
     for (LYRObjectChange *change in changes) {
         if (![change.object isEqual:self.conversation]) {
@@ -864,7 +864,7 @@ static NSInteger const ATLPhotoActionSheet = 1000;
         if (participant) [knownParticipantsTyping addObject:participant];
     }];
     [self.typingIndicatorController updateWithParticipants:knownParticipantsTyping animated:animated];
-    
+
     if (knownParticipantsTyping.count) {
         self.typingIndicatorInset = self.typingIndicatorController.view.frame.size.height;
     } else {
@@ -888,7 +888,6 @@ static NSInteger const ATLPhotoActionSheet = 1000;
     }
     [self configureAddressBarForChangedParticipants];
     [self configureControllerForConversation];
-    [self.collectionView reloadData];
 }
 
 #pragma mark - Device Rotation
@@ -929,13 +928,13 @@ static NSInteger const ATLPhotoActionSheet = 1000;
     if (CGRectEqualToRect(self.collectionView.frame, CGRectZero)) return;
     if (self.collectionView.isDragging) return;
     if (self.collectionView.isDecelerating) return;
-    
+
     CGFloat topOffset = -self.collectionView.contentInset.top;
     CGFloat distanceFromTop = self.collectionView.contentOffset.y - topOffset;
     CGFloat minimumDistanceFromTopToTriggerLoadingMore = 200;
     BOOL nearTop = distanceFromTop <= minimumDistanceFromTopToTriggerLoadingMore;
     if (!nearTop) return;
-    
+
     self.expandingPaginationWindow = YES;
     [self.conversationDataSource expandPaginationWindow];
 }
@@ -966,16 +965,16 @@ static NSInteger const ATLPhotoActionSheet = 1000;
 {
     NSSet *participants = self.addressBarController.selectedParticipants.set;
     NSSet *participantIdentifiers = [participants valueForKey:@"userID"];
-    
+
     if (!participantIdentifiers && !self.conversation.participants) return;
-    
+
     NSString *authenticatedUserID = self.layerClient.authenticatedUser.userID;
     NSMutableSet *conversationParticipantsCopy = [[self.conversation.participants valueForKey:@"userID"] mutableCopy];
     if ([conversationParticipantsCopy containsObject:authenticatedUserID]) {
         [conversationParticipantsCopy removeObject:authenticatedUserID];
     }
     if ([participantIdentifiers isEqual:conversationParticipantsCopy]) return;
-    
+
     LYRConversation *conversation = [self conversationWithParticipants:participants];
     self.conversation = conversation;
 }
@@ -985,26 +984,26 @@ static NSInteger const ATLPhotoActionSheet = 1000;
 - (void)configureAddressBarForChangedParticipants
 {
     if (!self.addressBarController) return;
-    
+
     NSOrderedSet *existingParticipants = self.addressBarController.selectedParticipants;
     NSOrderedSet *existingParticipantIdentifiers = [existingParticipants valueForKey:@"userID"];
-    
+
     if (!existingParticipantIdentifiers && !self.conversation.participants) return;
     if ([existingParticipantIdentifiers.set isEqual:[self.conversation.participants valueForKey:@"userID"]]) return;
-    
+
     NSMutableOrderedSet *removedIdentifiers = [NSMutableOrderedSet orderedSetWithOrderedSet:existingParticipantIdentifiers];
     [removedIdentifiers minusSet:[self.conversation.participants valueForKey:@"userID"]];
-    
+
     NSMutableOrderedSet *addedIdentifiers = [NSMutableOrderedSet orderedSetWithSet:[self.conversation.participants valueForKey:@"userID"]];
     [addedIdentifiers minusOrderedSet:existingParticipantIdentifiers];
-    
+
     NSString *authenticatedUserID = self.layerClient.authenticatedUser.userID;
     if (authenticatedUserID) [addedIdentifiers removeObject:authenticatedUserID];
-    
+
     NSMutableOrderedSet *participantIdentifiers = [NSMutableOrderedSet orderedSetWithOrderedSet:existingParticipantIdentifiers];
     [participantIdentifiers minusOrderedSet:removedIdentifiers];
     [participantIdentifiers unionOrderedSet:addedIdentifiers];
-    
+
     NSOrderedSet *participants = [self participantsForIdentifiers:participantIdentifiers];
     self.addressBarController.selectedParticipants = participants;
 }
@@ -1037,7 +1036,7 @@ static NSInteger const ATLPhotoActionSheet = 1000;
     if (self.conversationDataSource.queryController.query == nil) {
         return;
     }
-    
+
     dispatch_async(self.animationQueue, ^{
         // Query for all of the message identifiers in the conversation
         LYRQuery *messageIdentifiersQuery = [self.conversationDataSource.queryController.query copy];
@@ -1051,7 +1050,7 @@ static NSInteger const ATLPhotoActionSheet = 1000;
             NSLog(@"LayerKit failed to execute query with error: %@", error);
             return;
         }
-        
+
         // Query for the all of the message identifiers in the above set where user == participantIdentifier
         LYRQuery *query = [LYRQuery queryWithQueryableClass:[LYRMessage class]];
         LYRPredicate *senderPredicate = [LYRPredicate predicateWithProperty:@"sender.userID" predicateOperator:LYRPredicateOperatorIsEqualTo value:participantIdentifier];
@@ -1063,7 +1062,7 @@ static NSInteger const ATLPhotoActionSheet = 1000;
             NSLog(@"LayerKit failed to execute query with error: %@", error);
             return;
         }
-        
+
         // Convert query controller index paths to collection view index paths
         NSDictionary *objectIdentifiersToIndexPaths = [self.conversationDataSource.queryController indexPathsForObjectsWithIdentifiers:messageIdentifiersToReload.set];
         NSArray *queryControllerIndexPaths = [objectIdentifiersToIndexPaths allValues];
@@ -1182,7 +1181,7 @@ static NSInteger const ATLPhotoActionSheet = 1000;
 - (LYRConversation *)conversationWithParticipants:(NSSet *)participants
 {
     if (participants.count == 0) return nil;
-    
+
     LYRConversation *conversation;
     if ([self.dataSource respondsToSelector:@selector(conversationViewController:conversationWithParticipants:)]) {
         conversation = [self.dataSource conversationViewController:self conversationWithParticipants:participants];
@@ -1191,7 +1190,7 @@ static NSInteger const ATLPhotoActionSheet = 1000;
     NSSet *participantIdentifiers = [participants valueForKey:@"userID"];
     conversation = [self existingConversationWithParticipantIdentifiers:participantIdentifiers];
     if (conversation) return conversation;
-    
+
     LYRConversationOptions *conversationOptions = [LYRConversationOptions new];
     conversationOptions.deliveryReceiptsEnabled = participants.count <= 5;
     conversation = [self.layerClient newConversationWithParticipants:participantIdentifiers options:conversationOptions error:nil];
@@ -1220,23 +1219,23 @@ static NSInteger const ATLPhotoActionSheet = 1000;
 {
     NSArray *objectChanges = [self.objectChanges copy];
     [self.objectChanges removeAllObjects];
-    
+
     if (self.expandingPaginationWindow) {
         self.expandingPaginationWindow = NO;
         self.showingMoreMessagesIndicator = [self.conversationDataSource moreMessagesAvailable];
         [self reloadCollectionViewAdjustingForContentHeightChange];
         return;
     }
-    
+
     if (objectChanges.count == 0) {
         [self configurePaginationWindow];
         [self configureMoreMessagesIndicatorVisibility];
         return;
     }
-    
+
     // Prevent scrolling if user has scrolled up into the conversation history.
     BOOL shouldScrollToBottom = [self shouldScrollToBottom];
-    
+
     // ensure the animation's queue will resume
     if (self.collectionView) {
         dispatch_suspend(self.animationQueue);
@@ -1246,19 +1245,19 @@ static NSInteger const ATLPhotoActionSheet = 1000;
                     case LYRQueryControllerChangeTypeInsert:
                         [self.collectionView insertSections:[NSIndexSet indexSetWithIndex:change.newIndex]];
                         break;
-                        
+
                     case LYRQueryControllerChangeTypeMove:
                         [self.collectionView moveSection:change.currentIndex toSection:change.newIndex];
                         break;
-                        
+
                     case LYRQueryControllerChangeTypeDelete:
                         [self.collectionView deleteSections:[NSIndexSet indexSetWithIndex:change.currentIndex]];
                         break;
-                        
+
                     case LYRQueryControllerChangeTypeUpdate:
                         // If we call reloadSections: for a section that is already being animated due to another move (e.g. moving section 17 to 16 causes section 16 to be moved/animated to 17 and then we also reload section 16), UICollectionView will throw an exception. But since all onscreen sections will be reconfigured (see below) we don't need to reload the sections here anyway.
                         break;
-                        
+
                     default:
                         break;
                 }
@@ -1268,7 +1267,7 @@ static NSInteger const ATLPhotoActionSheet = 1000;
         }];
     }
     [self configureCollectionViewElements];
-    
+
     if (shouldScrollToBottom)  {
         // We can't get the content size from the collection view because it will be out-of-date due to the above updates, but we can get the update-to-date size from the layout.
         CGSize contentSize = self.collectionView.collectionViewLayout.collectionViewContentSize;
@@ -1287,14 +1286,14 @@ static NSInteger const ATLPhotoActionSheet = 1000;
         LYRMessage *message = [self.conversationDataSource messageAtCollectionViewIndexPath:indexPath];
         [self configureCell:cell forMessage:message indexPath:indexPath];
     }
-    
+
     for (ATLConversationCollectionViewHeader *header in self.sectionHeaders) {
         NSIndexPath *queryControllerIndexPath = [self.conversationDataSource.queryController indexPathForObject:header.message];
         if (!queryControllerIndexPath) continue;
         NSIndexPath *collectionViewIndexPath = [self.conversationDataSource collectionViewIndexPathForQueryControllerIndexPath:queryControllerIndexPath];
         [self configureHeader:header atIndexPath:collectionViewIndexPath];
     }
-    
+
     for (ATLConversationCollectionViewFooter *footer in self.sectionFooters) {
         NSIndexPath *queryControllerIndexPath = [self.conversationDataSource.queryController indexPathForObject:footer.message];
         if (!queryControllerIndexPath) continue;
@@ -1310,7 +1309,7 @@ static NSInteger const ATLPhotoActionSheet = 1000;
     if ([cell conformsToProtocol:@protocol(ATLMessagePresenting)]) {
         [self configureCell:(UICollectionViewCell<ATLMessagePresenting> *)cell forMessage:message indexPath:collectionViewIndexPath];
     }
-    
+
     // Find the header...
     for (ATLConversationCollectionViewHeader *header in self.sectionHeaders) {
         NSIndexPath *queryControllerIndexPath = [self.conversationDataSource.queryController indexPathForObject:header.message];
@@ -1320,7 +1319,7 @@ static NSInteger const ATLPhotoActionSheet = 1000;
             break;
         }
     }
-    
+
     // ...and the footer
     for (ATLConversationCollectionViewFooter *footer in self.sectionFooters) {
         NSIndexPath *queryControllerIndexPath = [self.conversationDataSource.queryController indexPathForObject:footer.message];
@@ -1375,7 +1374,7 @@ static NSInteger const ATLPhotoActionSheet = 1000;
     // Layer Notifications
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveTypingIndicator:) name:LYRConversationDidReceiveTypingIndicatorNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(layerClientObjectsDidChange:) name:LYRClientObjectsDidChangeNotification object:nil];
-    
+
     // Application State Notifications
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleApplicationDidBecomeActive:) name:UIApplicationDidBecomeActiveNotification object:nil];
 }
