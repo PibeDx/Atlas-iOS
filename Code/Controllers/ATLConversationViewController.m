@@ -588,8 +588,10 @@ static NSInteger const ATLPhotoActionSheet = 1000;
 
 #pragma mark - ATLMessageInputToolbarDelegate
 
-- (void)messageInputToolbar:(ATLMessageInputToolbar *)messageInputToolbar didTapLeftAccessoryButton:(UIButton *)leftAccessoryButton
+- (void)sendPicture
 {
+    ATLMessageInputToolbar *messageInputToolbar = [self messageInputToolbar];
+
     if (messageInputToolbar.textInputView.isFirstResponder) {
         [messageInputToolbar.textInputView resignFirstResponder];
     }
@@ -601,6 +603,11 @@ static NSInteger const ATLPhotoActionSheet = 1000;
                                                     otherButtonTitles:ATLLocalizedString(@"atl.conversation.toolbar.actionsheet.takephoto.key", @"Take Photo/Video", nil), ATLLocalizedString(@"atl.conversation.toolbar.actionsheet.lastphoto.key", @"Last Photo/Video", nil), ATLLocalizedString(@"atl.conversation.toolbar.actionsheet.library.key", @"Photo/Video Library", nil), nil];
     [actionSheet showInView:self.view];
     actionSheet.tag = ATLPhotoActionSheet;
+}
+
+- (void)messageInputToolbar:(ATLMessageInputToolbar *)messageInputToolbar didTapLeftAccessoryButton:(UIButton *)leftAccessoryButton
+{
+    [self sendPicture];
 }
 
 - (void)messageInputToolbar:(ATLMessageInputToolbar *)messageInputToolbar didTapRightAccessoryButton:(UIButton *)rightAccessoryButton

@@ -264,6 +264,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)shouldDisplaySenderLabelForSection:(NSUInteger)section;
 
+- (void)sendPicture;
+
 ///---------------------------
 /// @name Configuring Behavior
 ///---------------------------
