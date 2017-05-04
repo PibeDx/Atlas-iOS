@@ -147,6 +147,7 @@ static NSInteger const ATLPhotoActionSheet = 1000;
 
     [self configureControllerForConversation];
     self.messageInputToolbar.inputToolBarDelegate = self;
+    self.messageInputToolbar.containerViewController = self;
     self.addressBarController.delegate = self;
     self.canDisableAddressBar = YES;
     [self atl_registerForNotifications];
