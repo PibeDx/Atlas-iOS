@@ -75,6 +75,9 @@ static CGFloat const ATLMaxScrollDistanceFromBottom = 150;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+
+    self.messageInputToolbar = [self initializeMessageInputToolbar];
+    self.messageInputToolbar.containerViewController = self;
     
     // Add typing indicator
     self.typingIndicatorController = [[ATLTypingIndicatorViewController alloc] init];
@@ -128,6 +131,11 @@ static CGFloat const ATLMaxScrollDistanceFromBottom = 150;
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (ATLMessageInputToolbar *)initializeMessageInputToolbar
+{
+    return [ATLMessageInputToolbar new];
 }
 
 #pragma mark - Public Setters 
