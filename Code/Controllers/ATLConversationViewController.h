@@ -266,6 +266,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)sendPicture;
 
+- (void)didScroll:(UIScrollView *)scrollView;
+
 ///---------------------------
 /// @name Configuring Behavior
 ///---------------------------

@@ -424,6 +424,7 @@ static NSInteger const ATLPhotoActionSheet = 1000;
 {
     // When the keyboard is being dragged, we need to update the position of the typing indicator.
     [self.view setNeedsUpdateConstraints];
+    [self didScroll:scrollView];
 }
 
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
@@ -444,6 +445,8 @@ static NSInteger const ATLPhotoActionSheet = 1000;
     [self configurePaginationWindow];
     [self configureMoreMessagesIndicatorVisibility];
 }
+
+- (void)didScroll:(UIScrollView *)scrollView {}
 
 #pragma mark - Reusable View Configuration
 
